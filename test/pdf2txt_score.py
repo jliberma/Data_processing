@@ -26,6 +26,12 @@ def main(argv):
     fp.close()
     device.close()
     outfp.close()
+
+    with open(outfile) as datafile:
+        lines = datafile.readlines()
+        #open('test2.txt', 'w').writelines(lines[8:-8])
+        open(datafile, 'w').writelines(lines[8:-8])
+
     return
 
 if __name__ == '__main__': sys.exit(main(sys.argv))
