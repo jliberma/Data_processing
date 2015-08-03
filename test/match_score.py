@@ -5,11 +5,11 @@
 # written by jliberman@utexas.edu
 ###########################################
 
-import csv
-import itertools
 import os
 import sys
 
+from csv import writer
+from itertools import izip
 from pdfminer.pdfdocument import PDFDocument
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfdevice import PDFDevice
@@ -47,6 +47,7 @@ def write_txt(pdf):
 
     return outfile
 
+
 # convert text to csv
 def write_csv(txt):
     
@@ -60,8 +61,8 @@ def write_csv(txt):
     outfile = match + "_" + event + "_" + "scoring" + ".csv"
 
     # parse text to dictionary lists
-    with open(txt, 'r') as in_file:
-        lines = (line.strip() for line in in_file)
+    with open(txt, 'r') as in_txt:
+        lines = (line.strip() for line in in_txt)
         for line in lines:
 	    if line.startswith(('H', "Description", "Time", "Team")):
 	            header = line.strip()
@@ -74,14 +75,11 @@ def write_csv(txt):
         out['match'].append(match)
         out['event'].append(event)
 
-    # write to the csv
-    with open(outfile, 'w') as out_file:
-        writer = csv.writer(out_file)
-	writer.writerow(("Event","Match","Half","Time","Team","Type"))
-        for row in itertools.izip(out['event'], out['match'], out['H'], out['Time'], out['Team'], out['Description']):
-            writer.writerows([row])
-    
-    return
+    # write to csv
+    with open(outfile, 'w') as out_csv:
+        csv = writer(out_csv)
+        for row in izip(out['event'], out['match'], out['H'], out['Time'], out['Team'], out['Description']):
+            csv.writerows([row])
 
 
 def main(argv):
@@ -94,9 +92,8 @@ def main(argv):
         return 1
 
     txt = write_txt(argv[1])
-    csv = write_csv(txt)
+    write_csv(txt)
 
-    return
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))
