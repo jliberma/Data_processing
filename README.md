@@ -2,3 +2,6 @@
 
 Python scripts to extract interesting data from IRB PDF match reports
 and save it in CSV.
+
+* match_scores.py converts IRB scoring match reports PDFs to csv format
+* get_scores.sh executes match_scores.py and concatenates results
