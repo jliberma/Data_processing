@@ -8,6 +8,7 @@
 import os
 import sys
 
+from contextlib import closing
 from csv import writer
 from itertools import izip
 from pdfminer.pdfdocument import PDFDocument
@@ -18,28 +19,21 @@ from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 
 
-# convert the PDF to text
-def write_txt(pdf):
-    outfile = pdf.split("_")[4] + "_" + pdf.split("_")[1] + "_" + \
-        pdf.split("_")[0] + ".txt"
+# convert PDF to text
+def write_txt(pdf_filename):
+    parts = pdf_filename.split("_")
+    outfile = '{}_{}_{}.txt'.format(parts[4], parts[1], parts[0])
     pagenos = set([2,3])
+    rsrcmgr = PDFResourceManager(caching=True)
 
-    codec = 'utf-8'
-    caching = True
-    laparams = LAParams()
+    with open(outfile, 'w') as txtout:
+	with closing(TextConverter(rsrcmgr, txtout, codec='utf-8', laparams=LAParams())) as device:
+	    with file(pdf_filename, 'rb') as pdfin:
+                interpreter = PDFPageInterpreter(rsrcmgr, device)
+                for page in PDFPage.get_pages(pdfin, pagenos):
+                    interpreter.process_page(page)
 
-    rsrcmgr = PDFResourceManager(caching=caching)
-    outfp = file(outfile, 'w+')
-    device = TextConverter(rsrcmgr, outfp, codec=codec, laparams=laparams)
-    fp = file(pdf, 'rb')
-    interpreter = PDFPageInterpreter(rsrcmgr, device)
-    for page in PDFPage.get_pages(fp, pagenos):
-        interpreter.process_page(page)
-    fp.close()
-    device.close()
-    outfp.close()
-
-    # remove header and footer from text file
+    # remove header/footer
     with open(outfile, 'r') as txtin:
         lines = txtin.read().splitlines(True)
     with open(outfile, 'w') as txtout:
@@ -58,7 +52,7 @@ def write_csv(txt):
     # create output filename
     event = txt.split("_")[1]
     match = txt.split("_")[0]
-    outfile = match + "_" + event + "_" + "scoring" + ".csv"
+    outfile = '{}_{}_scoring.csv'.format(match, event)
 
     # parse text to dictionary lists
     with open(txt, 'r') as in_txt:
