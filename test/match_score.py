@@ -52,7 +52,7 @@ def write_csv(txt):
     # create output filename
     event = txt.split("_")[1]
     match = txt.split("_")[0]
-    outfile = '{}_{}_scoring.csv'.format(match, event)
+    outfile = '{}_{}.csv'.format(match, event)
 
     # parse text to dictionary lists
     with open(txt, 'r') as in_txt:
