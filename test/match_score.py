@@ -10,7 +10,7 @@ import sys
 
 from contextlib import closing
 from csv import writer
-from itertools import izip
+from itertools import dropwhile, islice, izip
 from pdfminer.pdfdocument import PDFDocument
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.pdfdevice import PDFDevice
@@ -37,7 +37,14 @@ def write_txt(pdf_filename):
     with open(outfile, 'r') as txtin:
         lines = txtin.read().splitlines(True)
     with open(outfile, 'w') as txtout:
-        txtout.writelines(lines[8:-8])
+        start_at = dropwhile(lambda line: not line.startswith('H\n'), lines)
+        for line in islice(start_at, 0, None):
+	    if 'Page' in line or line == "\n":
+		pass
+	    elif 'Printed' in line:
+		break
+	    else:
+	    	txtout.write(line)
 
     return outfile
 
@@ -61,8 +68,10 @@ def write_csv(txt):
 	    if line.startswith(('H', "Description", "Time", "Team")):
 	            header = line.strip()
 		    out[header] = []
+		    print header
 	    else:
 		    out[header].append(line.strip('\n'))
+		    print line
 
     # populate match & event dictionary lists
     for x in out[header]:

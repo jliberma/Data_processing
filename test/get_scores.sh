@@ -1,6 +1,8 @@
 #!/bin/bash
 
-set -x
+#set -x
+# 7/8 worked better for the majority of files
+# I need an alogrithmic solution unless I want to parse exceptions manually
 
 x=0
 y=0
@@ -35,7 +37,7 @@ function cat_csv {
 
 function report {
 	z=$(echo "scale=3; $y/$x" | bc -l)
-	echo  "$x of $y ($z%) files parsed successfully."
+	echo  "$y of $x ($z%) files parsed successfully."
 
 	if [ $x -ne $y ]
 	then
