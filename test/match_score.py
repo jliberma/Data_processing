@@ -37,8 +37,9 @@ def write_txt(pdf_filename):
     with open(outfile, 'r') as txtin:
         lines = txtin.read().splitlines(True)
     with open(outfile, 'w') as txtout:
-        start_at = dropwhile(lambda line: not line.startswith('H\n'), lines)
+        start_at = dropwhile(lambda line: not line.startswith(('H\n', 'Team\n')), lines)
         for line in islice(start_at, 0, None):
+	    print line
 	    if 'Page' in line or line == "\n":
 		pass
 	    elif 'Printed' in line:
