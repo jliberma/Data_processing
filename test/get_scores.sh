@@ -22,16 +22,22 @@ function get_scores {
 	for i in $(ls *.pdf)
 	do
 		((x++))	
+		echo "processing $i"
 		./match_score.py $i 2> $i.err && rm $i.err
 	done
 }
 
 function cat_csv {
-	for i in $(ls *.csv | grep -v full.csv | sort -n | cut -f1 -d.)
+	for i in $(ls *.csv | cut -f2 -d_ | sort -u)
 	do
-       		((y++))	
-		cat $i.csv >> full.csv 
-		rm $i*
+		for j in $(ls *_$i | sort -n)
+		do
+       			((y++))	
+			echo "writing $j"
+			cat $j >> full.csv 
+			echo "removing $j"
+			rm $j
+		done
 	done
 }
 
@@ -49,4 +55,4 @@ function report {
 get_scores
 cat_csv
 report
-
+#rm *.txt

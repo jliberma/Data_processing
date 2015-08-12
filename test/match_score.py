@@ -39,7 +39,6 @@ def write_txt(pdf_filename):
     with open(outfile, 'w') as txtout:
         start_at = dropwhile(lambda line: not line.startswith(('H\n', 'Team\n')), lines)
         for line in islice(start_at, 0, None):
-	    print line
 	    if 'Page' in line or line == "\n":
 		pass
 	    elif 'Printed' in line:
@@ -58,9 +57,10 @@ def write_csv(txt):
     out['event'] = []
 
     # create output filename
-    event = txt.split("_")[1]
-    match = txt.split("_")[0]
-    outfile = '{}_{}.csv'.format(match, event)
+    event = txt.split("_")[0]
+    match = txt.split("_")[1]
+    #outfile = '{}_{}.csv'.format(match, event)
+    outfile = '{}_{}.csv'.format(event, match)
 
     # parse text to dictionary lists
     with open(txt, 'r') as in_txt:
@@ -69,10 +69,8 @@ def write_csv(txt):
 	    if line.startswith(('H', "Description", "Time", "Team")):
 	            header = line.strip()
 		    out[header] = []
-		    print header
 	    else:
 		    out[header].append(line.strip('\n'))
-		    print line
 
     # populate match & event dictionary lists
     for x in out[header]:
