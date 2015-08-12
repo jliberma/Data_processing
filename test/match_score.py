@@ -59,7 +59,6 @@ def write_csv(txt):
     # create output filename
     event = txt.split("_")[0]
     match = txt.split("_")[1]
-    #outfile = '{}_{}.csv'.format(match, event)
     outfile = '{}_{}.csv'.format(event, match)
 
     # parse text to dictionary lists
