@@ -1,9 +1,5 @@
 #!/bin/bash
 
-#set -x
-# 7/8 worked better for the majority of files
-# I need an alogrithmic solution unless I want to parse exceptions manually
-
 x=0
 y=0
 
