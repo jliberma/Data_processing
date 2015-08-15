@@ -24,7 +24,8 @@ function get_scores {
 }
 
 function cat_csv {
-	for i in $(ls *.csv | cut -f2 -d_ | sort -u)
+	echo "Event,Match,Half,Time,Team,Description" > full_score.csv
+	for i in $(ls *.csv | cut -f2 -d_ | sort -u | grep -v full)
 	do
 		for j in $(ls *_$i | sort -n)
 		do

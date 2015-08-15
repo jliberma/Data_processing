@@ -82,8 +82,10 @@ def write_csv(txt):
         out['ref'].append(ref)
 
     # write to csv
+    #headers = ['Event','Match','Ref','Half','Time','Team','Description','Reason']
     with open(outfile, 'w') as out_csv:
         csv = writer(out_csv)
+	#csv.writerow(headers)
         for row in izip(out['event'], out['match'], out['ref'], out['H'], out['Time'], out['Team'], out['Description'], out['Reason']):
             csv.writerows([row])
 

@@ -5,7 +5,7 @@ y=0
 
 if [ -f full_pen.csv ]
 then
-	rm full.csv
+	rm full_pen.csv
 fi
 
 if [ ! -x match_penalty.py ]
@@ -24,9 +24,10 @@ function get_penalties {
 }
 
 function cat_csv {
+	echo "Match,Event,Ref,Half,Time,Team,Description,Reason" > full_pen.csv
 	for i in $(ls *penalty.csv | cut -f2 -d_ | sort -u)
 	do
-		for j in $(ls *_$i*csv | sort -n)
+		for j in $(ls *_$i*csv | sort -n | grep -v full)
 		do
        			((y++))	
 			echo "writing $j"
