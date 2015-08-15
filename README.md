@@ -10,5 +10,6 @@ and save it in CSV.
 * [pandashells.examples.sh](data/pandashells.examples.sh) examples of data manipulation with [pandashells](https://github.com/robdmc/pandashells)
 
 Results from 2014-2015 World Sevens Series:
-* [full_score.csv](data/full_score.csv]
-* [full_pen.csv](data/full_pen.csv]
+
+* [full_score.csv](data/full_score.csv)
+* [full_pen.csv](data/full_pen.csv)
