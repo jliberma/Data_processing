@@ -3,34 +3,34 @@
 x=0
 y=0
 
-if [ -x full_score.csv ]
+if [ -f full_pen.csv ]
 then
-	rm full_score.csv
+	rm full.csv
 fi
 
-if [ ! -x match_score.py ]
+if [ ! -x match_penalty.py ]
 then
-	echo "ERROR: match_score.py missing."
+	echo "ERROR: match_penalty.py missing."
 	exit 1
 fi
 
-function get_scores {
+function get_penalties {
 	for i in $(ls *.pdf)
 	do
 		((x++))	
 		echo "processing $i"
-		./match_score.py $i 2> $i.err && rm $i.err
+		./match_penalty.py $i 2> $i.err && rm $i.err
 	done
 }
 
 function cat_csv {
-	for i in $(ls *.csv | cut -f2 -d_ | sort -u)
+	for i in $(ls *penalty.csv | cut -f2 -d_ | sort -u)
 	do
-		for j in $(ls *_$i | sort -n)
+		for j in $(ls *_$i*csv | sort -n)
 		do
        			((y++))	
 			echo "writing $j"
-			cat $j >> full_score.csv 
+			cat $j >> full_pen.csv 
 			echo "removing $j"
 			rm $j
 		done
@@ -48,7 +48,7 @@ function report {
 	fi
 }
 
-get_scores
+get_penalties
 cat_csv
 report
-#rm *.txt
+rm *.txt
