@@ -7,8 +7,8 @@ and save it in CSV.
 * [scripts/match_score.py](match_score.py) converts IRB scoring match reports PDFs to csv format
 * [scripts/get_score.sh](get_scores.sh) executes match_score.py and concatenates results
 * [scripts/get_penalties.sh](get_penalties.sh) executes match_penalty.py and concatenates results
-* [data/pandashells.examples.sh](pandashells.examples.sh) examples of data manipulation with [https://github.com/robdmc/pandashells](pandashells)
+* (pandashells.examples.sh) [data/pandashells.examples.sh] examples of data manipulation with (pandashells)[https://github.com/robdmc/pandashells]
 
 Results from 2014-2015 World Sevens Series:
-* [data/full_score.csv](full_score.csv)
-* [data/full_pen.csv](full_pen.csv)
+* (full_score.csv)[data/full_score.csv]
+* (full_pen.csv)[data/full_pen.csv]
