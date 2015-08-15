@@ -27,7 +27,7 @@ function cat_csv {
 	echo "Event,Match,Half,Time,Team,Description" > full_score.csv
 	for i in $(ls *.csv | cut -f2 -d_ | sort -u | grep -v full)
 	do
-		for j in $(ls *_$i | sort -n)
+		for j in $(ls *_$i | sort -n | grep -v full)
 		do
        			((y++))	
 			echo "writing $j"
