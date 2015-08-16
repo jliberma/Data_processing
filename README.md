@@ -1,7 +1,7 @@
-# rugby_data_processing
+# Data processing
 
-Python scripts to extract interesting data from IRB PDF match reports
-and save it in CSV.
+Scripts to extract interesting data from IRB PDF match reports
+and save it to CSV.
 
 * [match_penalty.py](scripts/match_penalty.py) converts IRB penalty match report PDFs to csv format
 * [match_score.py](scripts/match_score.py) converts IRB scoring match report PDFs to csv format
