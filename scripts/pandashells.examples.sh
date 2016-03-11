@@ -28,9 +28,9 @@ cat ../data/full_pen.csv | p.df 'df.groupby(by="Ref").Description.count().plot()
 #cat ../data/full_pen.csv | p.df 'df[df.Description.str.contains("attack")]' 'df.groupby(by="Team").Description.count()' -o index table header
 
 # test combining these with regex
-p.merge <(cat ../data/full_pen.csv | p.df 'df[df.Description.str.contains("attack")]' 'df.groupby(by="Team").Description.count()' -o index) <(cat ../data/full_pen.csv | p.df 'df[df.Description.str.contains("defence")]' 'df.groupby(by="Team").Description.count()' -o index) --how left --on Team | p.df -o table 
+#p.merge <(cat ../data/full_pen.csv | p.df 'df[df.Description.str.contains("attack")]' 'df.groupby(by="Team").Description.count()' -o index) <(cat ../data/full_pen.csv | p.df 'df[df.Description.str.contains("defence")]' 'df.groupby(by="Team").Description.count()' -o index) --how left --on Team | p.df -o table 
 
-p.merge <(cat ../data/full_pen.csv | p.df 'df[df.Description.str.contains("attack")]' 'df.groupby(by="Team").Description.count()' -o index) <(cat ../data/full_pen.csv | p.df 'df[df.Description.str.contains("defence")]' 'df.groupby(by="Team").Description.count()' -o index) --how left --on Team | p.plot -x Description_x -y Description_y -s o --xlabel "Attack" --ylabel "Defence" --title "Penalties by team" --savefig ../images/penalties.png
+#p.merge <(cat ../data/full_pen.csv | p.df 'df[df.Description.str.contains("attack")]' 'df.groupby(by="Team").Description.count()' -o index) <(cat ../data/full_pen.csv | p.df 'df[df.Description.str.contains("defence")]' 'df.groupby(by="Team").Description.count()' -o index) --how left --on Team | p.plot -x Description_x -y Description_y -s o --xlabel "Attack" --ylabel "Defence" --title "Penalties by team" --savefig ../images/penalties.png
 # ratio of attacking penalties vs defensive penalties per match
 ## related to time of possession?
 
