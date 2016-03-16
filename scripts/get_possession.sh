@@ -10,7 +10,7 @@ function get_possession {
 }
 
 function cat_csv {
-	echo "Match,Event,Team,H1,H2,Total" > full_poss.csv
+	echo "Match,Event,Team,Points,H1,H2,Total" > full_poss.csv
 	for i in $(ls *possession.csv | cut -f2 -d_ | sort -u)
 	do
 		for j in $(ls *_$i*csv | sort -n | grep -v full)
