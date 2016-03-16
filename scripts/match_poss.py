@@ -22,7 +22,7 @@ from pdfminer.layout import LAParams
 # convert PDF to text
 def write_txt(pdf_filename):
     parts = pdf_filename.split("_")
-    outfile = '{}_{}_{}.txt'.format(parts[4], parts[1], parts[0])
+    outfile = '{}_{}_{}_poss.txt'.format(parts[4], parts[1], parts[0])
     pagenos = set([0,0])
     rsrcmgr = PDFResourceManager(caching=True)
 
@@ -64,10 +64,20 @@ def write_csv(txt):
     # write to csv
     with open(outfile, 'w') as out_csv:
         csv = writer(out_csv)
-	line1 = [event,match,lines[0].split('(')[0].strip(),lines[0].split('(')[1].strip(' \n)'),
+	if '(' in lines[1]:
+		line1 = [event,match,lines[0].split('(')[0].strip(),lines[0].split('(')[1].strip(' \n)'),
 			lines[2].strip(),lines[3].strip(),lines[4].strip()]
-	line2 = [event,match,lines[1].split('(')[0].strip(),lines[1].split('(')[1].strip(' \n)'),
+		line2 = [event,match,lines[1].split('(')[0].strip(),lines[1].split('(')[1].strip(' \n)'),
 			lines[5].strip(),lines[6].strip(),lines[7].strip()]
+	else:
+		line1 = [event,match,lines[0].split('(')[0].strip(),lines[0].split('(')[1].strip(' \n)'),
+			lines[1].strip(),lines[2].strip(),lines[3].strip()]
+		line2 = [event,match,lines[4].split('(')[0].strip(),lines[4].split('(')[1].strip(' \n)'),
+			lines[5].strip(),lines[6].strip(),lines[7].strip()]
+	#line1 = [event,match,lines[0].split('(')[0].strip(),lines[0].split('(')[1].strip(' \n)'),
+	#		lines[2].strip(),lines[3].strip(),lines[4].strip()]
+	#line2 = [event,match,lines[1].split('(')[0].strip(),lines[1].split('(')[1].strip(' \n)'),
+	#		lines[5].strip(),lines[6].strip(),lines[7].strip()]
 	csv.writerow(line1)
 	csv.writerow(line2)
 

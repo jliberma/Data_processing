@@ -19,7 +19,7 @@ function cat_csv {
 			echo "writing $j"
 			cat $j >> full_poss.csv 
 			echo "removing $j"
-			rm $j
+#			rm $j
 		done
 	done
 }
