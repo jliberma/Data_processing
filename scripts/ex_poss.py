@@ -61,9 +61,10 @@ plt.xlabel("Possession differential (seconds)")
 plt.title("Scoring by time of possession differential")
 plt.savefig("7s_poss_scoring.png")
 
-# TODO: calculate frequencies
-# win with total, H1, H2 advantage
-# if team1.pts > team2.pts && team1.total > team2.total || if team2.pts > team1.pts && team2.total > team1.total
+# Calculate win frequency for teams with time of possession advantage
+total_win = ((poss_diff['Points'] > 0) & (poss_diff['Total'] > 0) | (poss_diff['Points'] < 0) & (poss_diff['Total'] < 0))
+print len(poss_diff[total_win])
+# only %54.8 of teams with possession advantage won
 
 # TODO: plot again without non-core teams
 # this could be a separate study
