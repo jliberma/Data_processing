@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from scipy import stats
 
 # make Tufte-style display dot-dash graph
-# available from: https://github.com/ahupp/etframes/blob/master/etframes.py
+# etframes is available from: https://github.com/ahupp/etframes/blob/master/etframes.py
 import etframes
 plt.style.use('ggplot')
 
@@ -35,6 +35,10 @@ team2 = full_poss[full_poss.side == 2].reset_index(drop=True)
 
 # subtract team 2 points and possession from team 1 points and possession
 poss_diff = team1[['Points','Total']] - team2[['Points','Total']]
+
+# calculate number of ties
+#tie = poss_diff['Points'] == 0
+#print len(poss_diff[tie])
 
 # calculate Pearson correlation coefficient and p-value
 pc = stats.pearsonr(poss_diff['Points'], poss_diff['Total'])
