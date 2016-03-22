@@ -50,6 +50,8 @@ ablineValues = slope * poss_diff[['Total']] + intercept
 plt.scatter(poss_diff['Total'],poss_diff['Points'],c=".5")
 etframes.add_dot_dash_plot(plt.gca(), ys=poss_diff['Points'], xs=poss_diff['Total'])
 plt.plot(poss_diff['Total'], ablineValues, 'b', c="k")
+
+# label and save the graph
 plt.ylabel("Point differential")
 plt.xlabel("Possession differential (seconds)")
 plt.title("Scoring by time of possession differential")
@@ -57,5 +59,7 @@ plt.savefig("7s_poss_scoring.png")
 
 # TODO: calculate frequencies
 # win with total, H1, H2 advantage
+# if team1.pts > team2.pts && team1.total > team2.total || if team2.pts > team1.pts && team2.total > team1.total
 
 # TODO: plot again without non-core teams
+# this could be a separate study
