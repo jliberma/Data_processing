@@ -20,13 +20,8 @@ def to_seconds(mmss):
 # read the possession data to a csv
 full_poss = pd.read_csv('https://raw.githubusercontent.com/jliberma/Data_processing/master/data/full_poss.csv')
 
-# TODO: submit to stack exchange for review, why can't I do this?
-#df[['H1','H2','Total']] = df[['H1','H2','Total']].map(to_seconds)
-
 # convert min:sec columns to sec
-full_poss['H1'] = full_poss['H1'].map(to_seconds)
-full_poss['H2'] = full_poss['H2'].map(to_seconds)
-full_poss['Total'] = full_poss['Total'].map(to_seconds)
+full_poss[['H1','H2','Total']] = full_poss[['H1','H2','Total']].applymap(to_seconds)
 
 # split match results into two data frames
 full_poss['side'] = np.tile([1,2],len(full_poss.index)/2)
@@ -34,15 +29,10 @@ team1 = full_poss[full_poss.side == 1].reset_index(drop=True)
 team2 = full_poss[full_poss.side == 2].reset_index(drop=True)
 
 # subtract team 2 points and possession from team 1 points and possession
-poss_diff = team1[['Points','Total']] - team2[['Points','Total']]
-
-# calculate number of ties
-#tie = poss_diff['Points'] == 0
-#print len(poss_diff[tie])
+poss_diff = team1[['Points','H1','H2','Total']] - team2[['Points','H1','H2','Total']]
 
 # calculate Pearson correlation coefficient and p-value
 pc = stats.pearsonr(poss_diff['Points'], poss_diff['Total'])
-print(pc)
 
 # find the slope and intercept of the best fit line
 slope,intercept = np.polyfit(poss_diff['Total'],poss_diff['Points'],1)
@@ -58,13 +48,21 @@ plt.plot(poss_diff['Total'], ablineValues, 'b', c="k")
 # label and save the graph
 plt.ylabel("Point differential")
 plt.xlabel("Possession differential (seconds)")
-plt.title("Scoring by time of possession differential")
+plt.title("Scoring and time of possession in rugby 7s")
 plt.savefig("7s_poss_scoring.png")
 
 # Calculate win frequency for teams with time of possession advantage
 total_win = ((poss_diff['Points'] > 0) & (poss_diff['Total'] > 0) | (poss_diff['Points'] < 0) & (poss_diff['Total'] < 0))
-print len(poss_diff[total_win])
-# only %54.8 of teams with possession advantage won
+h1_win = ((poss_diff['Points'] > 0) & (poss_diff['H1'] > 0) | (poss_diff['Points'] < 0) & (poss_diff['H1'] < 0))
+h2_win = ((poss_diff['Points'] > 0) & (poss_diff['H2'] > 0) | (poss_diff['Points'] < 0) & (poss_diff['H2'] < 0))
+#print "Total: %s" % len(poss_diff[total_win])
+#print "1st half %s" % len(poss_diff[h1_win])
+#print "2nd half: %s" % len(poss_diff[h2_win])
 
+# count ties
+#tie = poss_diff['Points'] == 0
+#print len(poss_diff[tie])
+
+# TODO: add percentage calculations
+# only %54.8 of teams with possession advantage won
 # TODO: plot again without non-core teams
-# this could be a separate study
