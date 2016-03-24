@@ -18,51 +18,49 @@ def to_seconds(mmss):
     return seconds
 
 # read the possession data to a csv
-full_poss = pd.read_csv('https://raw.githubusercontent.com/jliberma/Data_processing/master/data/full_poss.csv')
+fp = pd.read_csv('https://raw.githubusercontent.com/jliberma/Data_processing/master/data/full_poss.csv')
 
 # convert min:sec columns to sec
-full_poss[['H1','H2','Total']] = full_poss[['H1','H2','Total']].applymap(to_seconds)
+fp[['H1','H2','Total']] = fp[['H1','H2','Total']].applymap(to_seconds)
 
 # split match results into two data frames
-full_poss['side'] = np.tile([1,2],len(full_poss.index)/2)
-team1 = full_poss[full_poss.side == 1].reset_index(drop=True)
-team2 = full_poss[full_poss.side == 2].reset_index(drop=True)
+fp['side'] = np.tile([1,2],len(fp.index)/2)
+team1 = fp[fp.side == 1].reset_index(drop=True)
+team2 = fp[fp.side == 2].reset_index(drop=True)
 
 # subtract team 2 points and possession from team 1 points and possession
-poss_diff = team1[['Points','H1','H2','Total']] - team2[['Points','H1','H2','Total']]
-
-# calculate Pearson correlation coefficient and p-value
-pc = stats.pearsonr(poss_diff['Points'], poss_diff['Total'])
+pd2 = team1[['Points','H1','H2','Total']] - team2[['Points','H1','H2','Total']]
 
 # find the slope and intercept of the best fit line
-slope,intercept = np.polyfit(poss_diff['Total'],poss_diff['Points'],1)
+slope,intercept = np.polyfit(pd2['Total'],pd2['Points'],1)
 
 # create a list of values for the best fit line
-ablineValues = slope * poss_diff[['Total']] + intercept
+ablineValues = slope * pd2[['Total']] + intercept
 
 # plot the best fit line over the values
-plt.scatter(poss_diff['Total'],poss_diff['Points'],c=".5")
-etframes.add_dot_dash_plot(plt.gca(), ys=poss_diff['Points'], xs=poss_diff['Total'])
-plt.plot(poss_diff['Total'], ablineValues, 'b', c="k")
+plt.scatter(pd2['Total'],pd2['Points'],c=".5")
+etframes.add_dot_dash_plot(plt.gca(), ys=pd2['Points'], xs=pd2['Total'])
+plt.plot(pd2['Total'], ablineValues, 'b', c="k")
 
-# label and save the graph
+# label the graph
 plt.ylabel("Point differential")
 plt.xlabel("Possession differential (seconds)")
 plt.title("Scoring and time of possession in rugby 7s")
+
+# annotate graph with Pearson correlation coefficient and p-value
+pc = stats.pearsonr(pd2['Points'], pd2['Total'])
+plt.annotate('correlation coefficient: %s' % round(pc[0],4), xy=(0,0), xytext=(150, -45))
+plt.annotate('p-value: %s' % pc[1], xy=(0,0), xytext=(150, -50))
+
+# save the graph
 plt.savefig("7s_poss_scoring.png")
 
 # Calculate win frequency for teams with time of possession advantage
-total_win = ((poss_diff['Points'] > 0) & (poss_diff['Total'] > 0) | (poss_diff['Points'] < 0) & (poss_diff['Total'] < 0))
-h1_win = ((poss_diff['Points'] > 0) & (poss_diff['H1'] > 0) | (poss_diff['Points'] < 0) & (poss_diff['H1'] < 0))
-h2_win = ((poss_diff['Points'] > 0) & (poss_diff['H2'] > 0) | (poss_diff['Points'] < 0) & (poss_diff['H2'] < 0))
-#print "Total: %s" % len(poss_diff[total_win])
-#print "1st half %s" % len(poss_diff[h1_win])
-#print "2nd half: %s" % len(poss_diff[h2_win])
+# boolean indexing: http://pandas.pydata.org/pandas-docs/stable/indexing.html#boolean-indexing
+total = (pd2.Points * pd2.Total > 0).sum()
+pct = round(float(total.sum())/len(pd2.index),2)
 
-# count ties
-#tie = poss_diff['Points'] == 0
-#print len(poss_diff[tie])
+print('%s%% of matches were won by the team with more possession (%s/%s)' % 
+    (int(100*pct), total, len(pd2.index)))
 
-# TODO: add percentage calculations
-# only %54.8 of teams with possession advantage won
 # TODO: plot again without non-core teams
