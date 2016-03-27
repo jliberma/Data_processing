@@ -5,12 +5,13 @@ function get_possession {
 	do
 		((x++))	
 		echo "processing $i"
-		./match_poss.py $i 2> $i.err && rm $i.err
+		#./match_poss.py $i 2> $i.err && rm $i.err
+		./match_poss_single.py $i 2> $i.err && rm $i.err
 	done
 }
 
 function cat_csv {
-	echo "Match,Event,Team,Points,H1,H2,Total" > full_poss.csv
+	echo "Match,Event,T1,T1p,T1t,T2,T2p,T2t" > full_poss.csv
 	for i in $(ls *possession.csv | cut -f2 -d_ | sort -u)
 	do
 		for j in $(ls *_$i*csv | sort -n | grep -v full)
