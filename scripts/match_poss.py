@@ -62,20 +62,55 @@ def write_csv(txt):
 	lines = in_txt.readlines()
 
     # write to csv
-    with open(outfile, 'w') as out_csv:
+    with open(outfile, 'wb') as out_csv:
         csv = writer(out_csv)
 	if '(' in lines[1]:
-		line1 = [event,match,lines[0].split('(')[0].strip(),lines[0].split('(')[1].strip(' \n)'),
-			lines[2].strip(),lines[3].strip(),lines[4].strip()]
-		line2 = [event,match,lines[1].split('(')[0].strip(),lines[1].split('(')[1].strip(' \n)'),
-			lines[5].strip(),lines[6].strip(),lines[7].strip()]
+		if int(lines[0].split('(')[1].strip(' \n)')) > int(lines[1].split('(')[1].strip(' \n)')):
+			line = [
+			event,
+			match,
+			lines[0].split('(')[0].strip(),
+			lines[0].split('(')[1].strip(' \n)'),
+			lines[4].strip(),
+			lines[1].split('(')[0].strip(),
+			lines[1].split('(')[1].strip(' \n)'),
+			lines[7].strip()
+			]
+		else:
+			line = [
+			event,
+			match,
+			lines[1].split('(')[0].strip(),
+			lines[1].split('(')[1].strip(' \n)'),
+			lines[7].strip(),
+			lines[0].split('(')[0].strip(),
+			lines[0].split('(')[1].strip(' \n)'),
+			lines[4].strip()
+			]
 	else:
-		line1 = [event,match,lines[0].split('(')[0].strip(),lines[0].split('(')[1].strip(' \n)'),
-			lines[1].strip(),lines[2].strip(),lines[3].strip()]
-		line2 = [event,match,lines[4].split('(')[0].strip(),lines[4].split('(')[1].strip(' \n)'),
-			lines[5].strip(),lines[6].strip(),lines[7].strip()]
-	csv.writerow(line1)
-	csv.writerow(line2)
+		if int(lines[0].split('(')[1].strip(' \n)')) > int(lines[4].split('(')[1].strip(' \n)')):
+			line = [
+			event,
+			match,
+			lines[0].split('(')[0].strip(),
+			lines[0].split('(')[1].strip(' \n)'),
+			lines[3].strip(),
+			lines[4].split('(')[0].strip(),
+			lines[4].split('(')[1].strip(' \n)'),
+			lines[7].strip()
+			]
+		else:
+			line = [
+			event,
+			match,
+			lines[4].split('(')[0].strip(),
+			lines[4].split('(')[1].strip(' \n)'),
+			lines[7].strip(),
+			lines[0].split('(')[0].strip(),
+			lines[0].split('(')[1].strip(' \n)'),
+			lines[3].strip()
+			]
+	csv.writerow(line)
 
 
 def main(argv):

@@ -5,8 +5,7 @@ function get_possession {
 	do
 		((x++))	
 		echo "processing $i"
-		#./match_poss.py $i 2> $i.err && rm $i.err
-		./match_poss_single.py $i 2> $i.err && rm $i.err
+		./match_poss.py $i 2> $i.err && rm $i.err
 	done
 }
 
@@ -54,3 +53,4 @@ get_possession
 cat_csv
 report
 rm *.txt
+python $HOME/Applications/miniconda/lib/python2.7/site-packages/dos2unix.py full_poss.csv full_poss.csv

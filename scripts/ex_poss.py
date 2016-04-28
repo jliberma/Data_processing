@@ -5,76 +5,139 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
-# make Tufte-style display dot-dash graph
-# etframes is available from: https://github.com/ahupp/etframes/blob/master/etframes.py
+# make Tufte-style dot-dash graph -- dashes on the axes mark the data points
+# etframes: https://github.com/ahupp/etframes/blob/master/etframes.py
 import etframes
 plt.style.use('ggplot')
 
-# function to convert min:sec to sec
+# convert min:sec to sec
 def to_seconds(mmss):
     seconds= 0
     for sect in mmss.split(':'):
         seconds = seconds * 60 + int(sect)
     return seconds
 
-# read the possession data to a csv
+# jitter the scatterplot for readability
+# from: http://stackoverflow.com/questions/8671808/matplotlib-avoiding-overlapping-datapoints-in-a-scatter-dot-beeswarm-plot
+def rand_jitter(arr):
+    np.random.seed(1234)
+    stdev = .01*(max(arr)-min(arr))
+    return arr + np.random.randn(len(arr)) * stdev
+
+def jitter(x, y, s=20, c='b', marker='o', cmap=None, norm=None, vmin=None, vmax=None, alpha=None, linewidths=None, verts=None, hold=None, **kwargs):
+    return plt.scatter(rand_jitter(x), rand_jitter(y), 
+        s=s, c=c, marker=marker, cmap=cmap, norm=norm, 
+        vmin=vmin, vmax=vmax, alpha=alpha, linewidths=linewidths, 
+        verts=verts, hold=hold, **kwargs)
+
+# read possession data to csv
 fp = pd.read_csv('https://raw.githubusercontent.com/jliberma/Data_processing/master/data/full_poss.csv')
 
 # convert min:sec columns to sec
-fp[['H1','H2','Total']] = fp[['H1','H2','Total']].applymap(to_seconds)
+fp[['T1t','T2t']] = fp[['T1t','T2t']].applymap(to_seconds)
 
-# split match results into two data frames
-fp['side'] = np.tile([1,2],len(fp.index)/2)
-t1 = fp[fp.side == 1].reset_index(drop=True)
-t2 = fp[fp.side == 2].reset_index(drop=True)
+# combine both teams to single data series
+p = fp.T1p.append(fp.T2p)
+t = fp.T1t.append(fp.T2t)
 
-# subtract team 2 points and possession from team 1 points and possession
-pd2 = t1[['Points','H1','H2','Total']] - t2[['Points','H1','H2','Total']]
+# plot relationship between time of possession and scoring
+allteams=jitter(t,p,c=".5")
+etframes.add_dot_dash_plot(plt.gca(), ys=p, xs=t)
+plt.ylim(-5,65)
+plt.xlim(0,400)
 
-# find the slope and intercept of the best fit line
-slope,intercept = np.polyfit(pd2['Total'],pd2['Points'],1)
-
-# create a list of values for the best fit line
-ablineValues = slope * pd2[['Total']] + intercept
-
-# plot the best fit line over the values
-plt.scatter(pd2['Total'],pd2['Points'],c=".5")
-etframes.add_dot_dash_plot(plt.gca(), ys=pd2['Points'], xs=pd2['Total'])
-#plt.plot(pd2['Total'], ablineValues, 'b', c="k")
+# add mean scoring/time of possession lines to the plot
+mt = np.mean(t)
+mp = np.mean(p)
+plt.plot([mt,mt],plt.gca().get_ylim(), linestyle="--")
+plt.plot(plt.gca().get_xlim(),[mp,mp], linestyle="--")
 
 # label the graph
-plt.ylabel("Point differential")
-plt.xlabel("Possession differential (seconds)")
+plt.ylabel("Points")
+plt.xlabel("Possession (seconds)")
 plt.title("Scoring and time of possession in rugby 7s")
 
-# annotate graph with Pearson correlation coefficient and p-value
-pc = stats.pearsonr(pd2['Points'], pd2['Total'])
-#plt.annotate('correlation coefficient: %s' % round(pc[0],4), xy=(0,0), xytext=(150, -45))
-#plt.annotate('p-value: %s' % pc[1], xy=(0,0), xytext=(150, -50))
-
 # save the graph
-#plt.savefig("7s_poss_scoring.png")
+plt.savefig("7s_poss_scoring.png")
+plt.clf()
 
-# Calculate win frequency for teams with time of possession advantage
-# boolean indexing: http://pandas.pydata.org/pandas-docs/stable/indexing.html#boolean-indexing
-total = (pd2.Points * pd2.Total > 0).sum()
-pct = round(float(total.sum())/len(pd2.index),2)
+# calculate point and possession differentials for all matches
+pd = fp.T1p-fp.T2p
+td = fp.T1t-fp.T2t
 
-print('%s%% of matches were won by the team with more possession (%s/%s)' % 
-    (int(100*pct), total, len(pd2.index)))
+# Calculate win frequency for teams with more possession
+total = (pd * td > 0).sum()
+pct = round(float(total.sum())/len(fp.index),2)
+print('Matches won by possession leaders (all teams): %s%% (%s/%s)' % 
+    (int(100*pct), total, len(fp.index)))
 
-# TODO: plot again without non-core teams
-# TODO: gather non-core teams programatically
+# plot differentials for matches with >= 1 non-core team
 noncore = ['BELGIUM','BRAZIL','RUSSIA','HONG KONG','ZIMBABWE','AMERICAN SAMOA','PAPUA NEW GUINEA']
-t1.columns=['Match','Event','T1','P1','T1H1','T1H2','T1T','side1']
-t2.columns=['Match','Event','T2','P2','T2H1','T2H2','T2T','side2']
-t3 = pd.merge(t1,t2,on=['Match','Event'])
-t3 = t3[-t3['T1'].isin(noncore)&-t3['T2'].isin(noncore)]
-p = t3.P1 - t3.P2
-t = t3.T1T - t3.T2T
-nct = sum(t*p>0)
-ncpct = round(float(nct.sum())/len(t3.index),2)
-print('%s%% of matches were won by teams with more possession (core vs core only) (%s/%s)' % 
-    (int(100*ncpct), nct, len(t3.index)))
-plt.scatter(t,p,c="r")
-plt.show()
+nc = fp[fp['T1'].isin(noncore) | fp['T2'].isin(noncore)]
+ncp = nc.T1p-nc.T2p
+nct = nc.T1t-nc.T2p
+jitter(nct,ncp,c=".5")
+etframes.add_dot_dash_plot(plt.gca(), ys=ncp, xs=nct)
+
+# plot differentials for matches with 0 non-core teams
+ct = fp[-fp['T1'].isin(noncore) & -fp['T2'].isin(noncore)]
+ctp = ct.T1p-ct.T2p
+ctt = ct.T1t-ct.T2t
+coreteams=jitter(ctt,ctp,c=".5")
+etframes.add_dot_dash_plot(plt.gca(), ys=ctp, xs=ctt)
+
+# annotate graph with Pearson correlation coefficient
+pc = stats.pearsonr(p,t)
+plt.annotate('r = %s' % round(pc[0],4), xy=(0,0), xytext=(100,58))
+
+# add best fit line for all matches
+slope,intercept = np.polyfit(td,pd,1)
+ablineValues = slope * td + intercept
+plt.plot(td, ablineValues, 'b', c=".5")
+
+# label graph
+plt.ylim(-5,65)
+plt.xlim(-300,310)
+plt.ylabel("Point differential")
+plt.xlabel("Possession differential (seconds)")
+plt.title("Winning and time of possession in rugby 7s\n(All teams)")
+plt.savefig("7s_poss_diff_scoring_all.png")
+plt.clf()
+
+# plot core and non-core matches as separate series
+ncj = jitter(nct,ncp,c=".75")
+cj = jitter(ctt,ctp,c=".5")
+plt.legend((ncj,cj),('Non-core','Core'),scatterpoints=1,
+		loc='upper right',fontsize=8)
+etframes.add_dot_dash_plot(plt.gca(), ys=ncp, xs=nct)
+etframes.add_dot_dash_plot(plt.gca(), ys=ctp, xs=ctt)
+
+# core winning percentage for possession leader
+core_total = (ctt * ctp > 0).sum()
+c_pct = round(float(core_total.sum())/len(ct.index),2)
+print('Matches won by possession leaders (core teams): %s%% (%s/%s)' % 
+    (int(100*c_pct), core_total, len(ct.index)))
+
+# non-core winning percentage for possession leader
+non_core_total = (nct * ncp > 0).sum()
+nc_pct = round(float(non_core_total.sum())/len(nc.index),2)
+print('Matches won by possession leaders (non-core): %s%% (%s/%s)' % 
+    (int(100*nc_pct), non_core_total, len(nc.index)))
+
+# add best fit lines for both core and non-core
+plt.plot(td, ablineValues, 'b', c=".75")
+slope,intercept = np.polyfit(ctt,ctp,1)
+core_ablineValues = slope * ctt + intercept
+plt.plot(ctt, core_ablineValues, 'b', c="r")
+
+# plot the Pearson correlation coefficient for core matches
+pc = stats.pearsonr(ctp,ctt)
+plt.annotate('r = %s' % round(pc[0],4), xy=(0,0), xytext=(100,58))
+
+# label the graph
+plt.ylim(-5,65)
+plt.xlim(-300,310)
+plt.ylabel("Point differential")
+plt.xlabel("Possession differential (seconds)")
+plt.title("Winning and time of possession in rugby 7s\n(Core teams)")
+plt.savefig("7s_poss_diff_scoring_core.png")
