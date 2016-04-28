@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 
+############################################################
+# ex_poss - plot relationship between possession and scoring
+# from 2014-2015 HSBC World Rugby Sevens Series matches
+# written by jliberman@utexas.edu
+############################################################
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
