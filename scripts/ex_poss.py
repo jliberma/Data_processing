@@ -24,7 +24,8 @@ def rand_jitter(arr):
     stdev = .01*(max(arr)-min(arr))
     return arr + np.random.randn(len(arr)) * stdev
 
-def jitter(x, y, s=20, c='b', marker='o', cmap=None, norm=None, vmin=None, vmax=None, alpha=None, linewidths=None, verts=None, hold=None, **kwargs):
+def jitter(x, y, s=20, c='b', marker='o', cmap=None, norm=None, vmin=None, vmax=None,
+		alpha=None, linewidths=None, verts=None, hold=None, **kwargs):
     return plt.scatter(rand_jitter(x), rand_jitter(y), 
         s=s, c=c, marker=marker, cmap=cmap, norm=norm, 
         vmin=vmin, vmax=vmax, alpha=alpha, linewidths=linewidths, 
@@ -72,7 +73,8 @@ print('Matches won by possession leaders (all teams): %s%% (%s/%s)' %
     (int(100*pct), total, len(fp.index)))
 
 # plot differentials for matches with >= 1 non-core team
-noncore = ['BELGIUM','BRAZIL','RUSSIA','HONG KONG','ZIMBABWE','AMERICAN SAMOA','PAPUA NEW GUINEA']
+noncore = ['BELGIUM','BRAZIL','RUSSIA','HONG KONG',
+'ZIMBABWE','AMERICAN SAMOA','PAPUA NEW GUINEA']
 nc = fp[fp['T1'].isin(noncore) | fp['T2'].isin(noncore)]
 ncp = nc.T1p-nc.T2p
 nct = nc.T1t-nc.T2p
