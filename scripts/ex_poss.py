@@ -39,6 +39,10 @@ def jitter(x, y, s=20, c='b', marker='o', cmap=None, norm=None, vmin=None, vmax=
 
 # read possession data to csv
 fp = pd.read_csv('https://raw.githubusercontent.com/jliberma/Data_processing/master/data/full_poss.csv')
+top = pd.read_csv('https://raw.githubusercontent.com/jliberma/Data_processing/master/data/top.csv')
+
+print top.head()
+top.describe()
 
 # convert min:sec columns to sec
 fp[['T1t','T2t']] = fp[['T1t','T2t']].applymap(to_seconds)
