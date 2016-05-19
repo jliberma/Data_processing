@@ -38,10 +38,10 @@ def jitter(x, y, s=20, c='b', marker='o', cmap=None, norm=None, vmin=None, vmax=
         verts=verts, hold=hold, **kwargs)
 
 # read possession data to csv
-#fp = pd.read_csv('https://raw.githubusercontent.com/jliberma/Data_processing/master/data/full_poss.csv')
-#top = pd.read_csv('https://raw.githubusercontent.com/jliberma/Data_processing/master/data/top.csv',header=0,index_col=0)
-fp = pd.read_csv('full_poss.csv')
-top = pd.read_csv('top.csv',header=0,index_col=0)
+fp = pd.read_csv('https://raw.githubusercontent.com/jliberma/Data_processing/master/data/full_poss.csv')
+top = pd.read_csv('https://raw.githubusercontent.com/jliberma/Data_processing/master/data/top.csv',header=0,index_col=0)
+#fp = pd.read_csv('full_poss.csv')
+#top = pd.read_csv('top.csv',header=0,index_col=0)
 
 top[['avg']] = top[['avg']].applymap(to_seconds)
 avg = round(top[['avg']].mean(),0)
